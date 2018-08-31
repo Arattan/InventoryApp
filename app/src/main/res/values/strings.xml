@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">InventoryApp</string>
+    <!-- Title text for the empty view, which describes empty database[CHAR LIMIT=50] -->
+    <string name="empty_view_title_text">No Stock? </string>
+    <!-- Subtitle text for the empty view that prompts the user to add a pet [CHAR LIMIT=50] -->
+    <string name="empty_view_subtitle_text">What am I paying you for?</string>
+    <!-- Label for overflow menu option that inserts fake pet data into the app [CHAR LIMIT=20] -->
+    <string name="action_insert_dummy_data">Insert Dummy Data</string>
+    <!-- Label for overflow menu option that deletes all pet data in the app [CHAR LIMIT=20] -->
+    <string name="action_delete_all_entries">Delete All Pets</string>
+    <!-- Label for the product's quantity if the amount is unknown [CHAR LIMIT=20] -->
+    <string name="unknown_quantity">Unknown Quanity</string>
+</resources>
