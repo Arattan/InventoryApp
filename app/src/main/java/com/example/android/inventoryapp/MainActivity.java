@@ -3,33 +3,39 @@ package com.example.android.inventoryapp;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.content.CursorLoader;
-import android.content.Loader;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
 
+    private static final String LOG_TAG = MainActivity.class.getName();
     /** Identifier for the inventory data loader */
     private static final int INVENTORY_LOADER = 0;
 
     /** Adapter for the ListView */
     InventoryCursorAdapter mCursorAdapter;
+
+    private Uri mCurrentInventoryUri;
+    private Button mSaleButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +43,19 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         // Setup FAB to open EditorActivity
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
                 startActivity(intent);
+
+                Log.v(LOG_TAG, "test called...");
             }
         });
 
         // Find the ListView which will be populated with the inventory data
-        ListView inventoryListView = (ListView) findViewById(R.id.list);
+        ListView inventoryListView = findViewById(R.id.list);
 
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
@@ -75,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
                 // Set the URI on the data field of the intent
                 intent.setData(currentInventoryUri);
 
-                // Launch the {@link EditorActivity} to display the data for the current pet.
+                // Launch the {@link EditorActivity} to display the data for the current .
                 startActivity(intent);
             }
         });
@@ -83,22 +91,34 @@ public class MainActivity extends AppCompatActivity implements
         // Kick off the loader
         getLoaderManager().initLoader(INVENTORY_LOADER, null, this);
     }
+
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Helper method to insert hardcoded Inventory data into the database. For debugging purposes only.
      */
     private void insertProduct() {
         // Create a ContentValues object where column names are the keys,
-        // and Toto's pet attributes are the values.
+        // and Toto's attributes are the values.
         ContentValues values = new ContentValues();
         values.put(InventoryEntry.COLUMN_PRODUCT_NAME, "Android Toy");
         values.put(InventoryEntry.COLUMN_QUANTITY, 3);
         values.put(InventoryEntry.COLUMN_PRICE, 10);
 
         // Insert a new row for Toto into the provider using the ContentResolver.
-        // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
-        // into the pets database table.
+        // Use the {@link Entry#CONTENT_URI} to indicate that we want to insert
+        // into the inventorys database table.
         // Receive the new content URI that will allow us to access Toto's data in the future.
         Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
+
+        // Show a toast message depending on whether or not the insertion was successful
+        if (newUri == null) {
+            // If the new content URI is null, then there was an error with insertion.
+            Toast.makeText(this, getString(R.string.editor_insert_product_failed),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            // Otherwise, the insertion was successful and we can display a toast.
+            Toast.makeText(this, getString(R.string.editor_insert_product_successful),
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -135,15 +155,17 @@ public class MainActivity extends AppCompatActivity implements
 
     @NonNull
     @Override
-    public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
 
         String[] projection = {
                 InventoryEntry._ID,
                 InventoryEntry.COLUMN_PRODUCT_NAME,
-                InventoryEntry.COLUMN_QUANTITY };
+                InventoryEntry.COLUMN_QUANTITY,
+                InventoryEntry.COLUMN_PRICE};
 
         return new CursorLoader(this,
                 InventoryEntry.CONTENT_URI,
+                projection,
                 null,
                 null,
                 null);
@@ -152,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
-
     }
 
     @Override

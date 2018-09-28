@@ -1,11 +1,15 @@
 package com.example.android.inventoryapp;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -26,28 +30,49 @@ public class InventoryCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
-        TextView nameTextView = (TextView) view.findViewById(R.id.product_name);
-        TextView quantityTextView = (TextView) view.findViewById(R.id.current_quantity);
-        TextView priceTextView = (TextView) view.findViewById(R.id.price);
+        TextView nameTextView = view.findViewById(R.id.product_name);
+        TextView quantityTextView = view.findViewById(R.id.current_quantity);
+        TextView priceTextView = view.findViewById(R.id.price);
 
+        //Find sale button in each list item.
+        Button saleButton = view.findViewById(R.id.sale_button);
 
-        // Find the columns of pet attributes that we're interested in
+        // Find the columns of  attributes that we're interested in
+        final int idColumnIndex = cursor.getColumnIndex(InventoryEntry._ID);
         int nameColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRODUCT_NAME);
         int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
+        int priceColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRICE);
 
-        // Read the pet attributes from the Cursor for the current pet
+        // Read the product attributes from the Cursor for the current product
+        final int productId = cursor.getInt(idColumnIndex);
         String productName = cursor.getString(nameColumnIndex);
         String productQuantity = cursor.getString(quantityColumnIndex);
+        String productPrice = cursor.getString(priceColumnIndex);
 
-        // If the pet breed is empty string or null, then use some default text
-        // that says "Unknown breed", so the TextView isn't blank.
+        // If the quantity is empty string or null, then use some default text
+        // that says "Unknown Quantity", so the TextView isn't blank.
         if (TextUtils.isEmpty(productQuantity)) {
             productQuantity = context.getString(R.string.unknown_quantity);
         }
-
-        // Update the TextViews with the attributes for the current pet
+        // Update the TextViews with the attributes for the current Product
         nameTextView.setText(productName);
         quantityTextView.setText(productQuantity);
+        priceTextView.setText(productPrice);
+
+        final int quantityDb = Integer.parseInt(productQuantity);
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (quantityDb > 0) {
+                    int quantitySale = quantityDb - 1;
+                }
+
+                ContentValues values = new ContentValues();
+                Uri newSaleUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, productId);
+                values.put(InventoryEntry.COLUMN_QUANTITY, quantitySale);
+                int rowUpdated = context.getContentResolver().update(newSaleUri, values,null, null);
+            }
+        });
 
     }
 }

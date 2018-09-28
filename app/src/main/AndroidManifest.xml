@@ -9,15 +9,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditorActivity" />
-        <activity android:name=".InventoryCursorAdapter"></activity>
+        <activity
+            android:name=".EditorActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/EditorTheme">
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <provider
+            android:name=".data.InventoryProvider"
+            android:authorities="com.example.android.inventoryapp"
+            android:exported="false"/>
     </application>
 
 </manifest>
