@@ -62,16 +62,16 @@
     <string name="category_quantity">Quantity</string>
 
     <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
-    <string name="category_price">Price</string>
+    <string name="category_price">Price (€)</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_product_name">Name</string>
 
     <!-- Text hint for breed field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_quantity">Quantity</string>
+    <string name="hint_quantity">0</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_price">Price</string>
+    <string name="hint_price">0</string>
 
     <!-- Units for weight of the product (kilograms) [CHAR LIMIT=5] -->
     <string name="unit_currency">€</string>
@@ -91,8 +91,8 @@
     <string name="decrement_button">-</string>
     <string name="increment_button">+</string>
     <string name="category_actions">Further Actions</string>
-    <string name="contact_supplier">Contact Supplier</string>
-    <string name="delete_product">Delete Product From Inventory</string>
+    <string name="contact_supplier">Order More</string>
+    <string name="delete_product">Delete From Inventory</string>
 
 
 </resources>

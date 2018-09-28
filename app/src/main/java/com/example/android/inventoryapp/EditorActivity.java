@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
@@ -38,6 +39,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      */
     private EditText mNameEditText;
     /**
+     *  ImageView field for product image
+     */
+    private ImageView mProductImage;
+
+    /**
      * EditText field to enter the product's quantity
      */
     private EditText mQuantityEditText;
@@ -50,7 +56,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private Button mDecrementButton;
     private Button mIncrementButton;
     /**
-     * Content URI for the existing product (null if it's a new prdouct)
+     * Content URI for the existing product (null if it's a new product)
      */
     private Uri mCurrentInventoryUri;
 
@@ -139,7 +145,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         });
 
     }
-
 
     public void decreaseQuantity(View view){
         String quantityEt = mQuantityEditText.getText().toString();
@@ -336,6 +341,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String[] projection = {
                 InventoryEntry._ID,
                 InventoryEntry.COLUMN_PRODUCT_NAME,
+                InventoryEntry.COLUMN_IMAGE,
                 InventoryEntry.COLUMN_QUANTITY,
                 InventoryEntry.COLUMN_PRICE};
         // This loader will execute the ContentProvider's query method on a background thread
@@ -358,10 +364,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRODUCT_NAME);
+            int imageColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_IMAGE);
             int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRICE);
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
+
             int quantity = cursor.getInt(quantityColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             // Update the views on the screen with the values from the database

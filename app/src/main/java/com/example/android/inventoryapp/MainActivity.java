@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void insertProduct() {
         // Create a ContentValues object where column names are the keys,
-        // and Toto's attributes are the values.
+        // and a product's attributes are the values.
         ContentValues values = new ContentValues();
         values.put(InventoryEntry.COLUMN_PRODUCT_NAME, "Android Toy");
         values.put(InventoryEntry.COLUMN_QUANTITY, 3);

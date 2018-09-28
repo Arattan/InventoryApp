@@ -25,12 +25,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/category_quantity"
-            android:textAppearance="?android:textAppearanceMedium"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="@color/colorAccent"/>
 
         <TextView
             android:id="@+id/current_quantity"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:paddingStart="8dp"
@@ -41,13 +41,13 @@
 
         <Button
             android:id="@+id/sale_button"
-            android:layout_width="152dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
+            android:elevation="24dp"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:paddingLeft="8dp"
-            android:text="@string/sale_button"/>
+            android:text="@string/sale_button" />
     </LinearLayout>
 
     <LinearLayout
@@ -58,17 +58,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/category_price"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/colorAccent"
-            />
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="@color/colorAccent" />
 
         <TextView
             android:id="@+id/price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
-            android:paddingStart="35dp"
-            android:text="Price"
+            android:paddingStart="8dp"
+            android:text="0"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="#AEB6BD"
             android:textStyle="bold" />

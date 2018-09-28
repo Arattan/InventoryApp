@@ -28,7 +28,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
         return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);    }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = view.findViewById(R.id.product_name);
         TextView quantityTextView = view.findViewById(R.id.current_quantity);
@@ -63,14 +63,16 @@ public class InventoryCursorAdapter extends CursorAdapter {
         saleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int quantitySale = 0;
                 if (quantityDb > 0) {
-                    int quantitySale = quantityDb - 1;
+                    quantitySale = quantityDb - 1;
                 }
 
                 ContentValues values = new ContentValues();
-                Uri newSaleUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, productId);
                 values.put(InventoryEntry.COLUMN_QUANTITY, quantitySale);
-                int rowUpdated = context.getContentResolver().update(newSaleUri, values,null, null);
+
+                Uri newSaleUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, productId);
+                context.getContentResolver().update(newSaleUri, values, null, null);
             }
         });
 
