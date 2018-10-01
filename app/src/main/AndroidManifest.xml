@@ -28,7 +28,8 @@
         <provider
             android:name=".data.InventoryProvider"
             android:authorities="com.example.android.inventoryapp"
-            android:exported="false"/>
+            android:exported="false"
+            android:grantUriPermissions="true"/>
     </application>
 
 </manifest>

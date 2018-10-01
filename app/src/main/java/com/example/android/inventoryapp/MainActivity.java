@@ -96,16 +96,20 @@ public class MainActivity extends AppCompatActivity implements
      * Helper method to insert hardcoded Inventory data into the database. For debugging purposes only.
      */
     private void insertProduct() {
+        Uri dummyUri = Uri.parse("android.resource://com.example.android.inventoryapp/drawable/dummy_android_toy");
+        String dummyString;
+        dummyString = dummyUri.toString();
         // Create a ContentValues object where column names are the keys,
         // and a product's attributes are the values.
         ContentValues values = new ContentValues();
         values.put(InventoryEntry.COLUMN_PRODUCT_NAME, "Android Toy");
+        values.put(InventoryEntry.COLUMN_IMAGE, dummyString);
         values.put(InventoryEntry.COLUMN_QUANTITY, 3);
         values.put(InventoryEntry.COLUMN_PRICE, 10);
 
         // Insert a new row for Toto into the provider using the ContentResolver.
         // Use the {@link Entry#CONTENT_URI} to indicate that we want to insert
-        // into the inventorys database table.
+        // into the inventory database table.
         // Receive the new content URI that will allow us to access Toto's data in the future.
         Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
 
@@ -160,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements
         String[] projection = {
                 InventoryEntry._ID,
                 InventoryEntry.COLUMN_PRODUCT_NAME,
+                InventoryEntry.COLUMN_IMAGE,
                 InventoryEntry.COLUMN_QUANTITY,
                 InventoryEntry.COLUMN_PRICE};
 

@@ -63,6 +63,8 @@
 
     <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
     <string name="category_price">Price (€)</string>
+    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
+    <string name="category_image">Image</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_product_name">Name</string>
@@ -93,6 +95,8 @@
     <string name="category_actions">Further Actions</string>
     <string name="contact_supplier">Order More</string>
     <string name="delete_product">Delete From Inventory</string>
+    <string name="image_button">ADD IMAGE</string>
+    <string name="missing_image">Image is required</string>
 
 
 </resources>

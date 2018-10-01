@@ -13,15 +13,17 @@ import android.util.Log;
 
 import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
 
+import static com.example.android.inventoryapp.data.InventoryContract.InventoryEntry.TABLE_NAME;
+
 public class InventoryProvider extends ContentProvider {
 
     /** Tag for the log messages */
     public static final String LOG_TAG = InventoryProvider.class.getSimpleName();
 
-    /** URI matcher code for the content URI for the pets table */
+    /** URI matcher code for the content URI for the inventorys table */
     private static final int INVENTORY = 100;
 
-    /** URI matcher code for the content URI for a single pet in the pets table */
+    /** URI matcher code for the content URI for a single product in the pets table */
     private static final int INVENTORY_ID = 101;
 
     /**
@@ -38,13 +40,13 @@ public class InventoryProvider extends ContentProvider {
         // when a match is found.
 
         // The content URI of the form "content://com.example.android.pets/pets" will map to the
-        // integer code {@link #PETS}. This URI is used to provide access to MULTIPLE rows
+        // integer code {@link #INVENTORY}. This URI is used to provide access to MULTIPLE rows
         // of the pets table.
         sUriMatcher.addURI(InventoryContract.CONTENT_AUTHORITY,
                 InventoryContract.PATH_INVENTORY, INVENTORY);
 
         // The content URI of the form "content://com.example.android.pets/pets/#" will map to the
-        // integer code {@link #PET_ID}. This URI is used to provide access to ONE single row
+        // integer code {@link #INVENTORY_ID}. This URI is used to provide access to ONE single row
         // of the pets table.
         //
         // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
@@ -80,16 +82,16 @@ public class InventoryProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
         switch (match) {
             case INVENTORY:
-                // For the INVENTORY code, query the pets table directly with the given
+                // For the INVENTORY code, query the inventory table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
-                // could contain multiple rows of the pets table.
+                // could contain multiple rows of the inventory table.
                 //
                 // Perform database query on inventory table
-                cursor = database.query(InventoryEntry.TABLE_NAME, projection, selection, selectionArgs,
+                cursor = database.query(TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             case INVENTORY_ID:
-                // For the PET_ID code, extract out the ID from the URI.
+                // For the INVENTORY_ID code, extract out the ID from the URI.
                 // For an example URI such as "content://com.example.android.pets/pets/3",
                 // the selection will be "_id=?" and the selection argument will be a
                 // String array containing the actual ID of 3 in this case.
@@ -102,7 +104,7 @@ public class InventoryProvider extends ContentProvider {
 
                 // This will perform a query on the pets table where the _id equals 3 to return a
                 // Cursor containing that row of the table.
-                cursor = database.query(InventoryEntry.TABLE_NAME, projection, selection, selectionArgs,
+                cursor = database.query(TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             default:
@@ -141,6 +143,12 @@ public class InventoryProvider extends ContentProvider {
                 throw new IllegalArgumentException("Product requires a name");
             }
 
+            //Check that the image is not null
+            String image = values.getAsString(InventoryEntry.COLUMN_IMAGE);
+            if (image == null) {
+                throw new IllegalArgumentException("Product requires an image");
+            }
+
             // Check that the quantity is valid
             Integer quantity = values.getAsInteger(InventoryEntry.COLUMN_QUANTITY);
             if (quantity == null) {
@@ -157,7 +165,7 @@ public class InventoryProvider extends ContentProvider {
             SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
             // Insert the new pet with the given values
-            long id = database.insert(InventoryEntry.TABLE_NAME, null, values);
+            long id = database.insert(TABLE_NAME, null, values);
             // If the ID is -1, then the insertion failed. Log an error and return null.
             if (id == -1) {
                 Log.e(LOG_TAG, "Failed to insert row for " + uri);
@@ -182,13 +190,13 @@ public class InventoryProvider extends ContentProvider {
         switch (match) {
             case INVENTORY:
                 // Delete all rows that match the selection and selection args
-                rowsDeleted = database.delete(InventoryEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = database.delete(TABLE_NAME, selection, selectionArgs);
                 break;
             case INVENTORY_ID:
                 // Delete a single row given by the ID in the URI
                 selection = InventoryEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-               rowsDeleted = database.delete(InventoryEntry.TABLE_NAME, selection, selectionArgs);
+               rowsDeleted = database.delete(TABLE_NAME, selection, selectionArgs);
                break;
             default:
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);
@@ -210,7 +218,7 @@ public class InventoryProvider extends ContentProvider {
             case INVENTORY:
                 return updateInventory(uri, contentValues, selection, selectionArgs);
             case INVENTORY_ID:
-                // For the PET_ID code, extract out the ID from the URI,
+                // For the INVENTORY_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = InventoryEntry._ID + "=?";
@@ -223,7 +231,7 @@ public class InventoryProvider extends ContentProvider {
 
     /**
      * Update products in the database with the given content values. Apply the changes to the rows
-     * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
+     * specified in the selection and selection arguments (which could be 0 or 1 or more products).
      * Return the number of rows that were successfully updated.
      */
     private int updateInventory(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
@@ -236,18 +244,25 @@ public class InventoryProvider extends ContentProvider {
             }
         }
 
-        // If the {@link InventoryEntry#COLUMN_PET_GENDER} key is present,
+        if (values.containsKey(InventoryEntry.COLUMN_IMAGE)) {
+            String image = values.getAsString((InventoryEntry.COLUMN_IMAGE));
+            if (image == null) {
+                throw new IllegalArgumentException("Product requires an image");
+            }
+        }
+
+        // If the {@link InventoryEntry#COLUMN_QUANTITY_GENDER} key is present,
         // check that the gender value is valid.
         if (values.containsKey(InventoryEntry.COLUMN_QUANTITY)) {
-            Integer gender = values.getAsInteger(InventoryEntry.COLUMN_QUANTITY);
-            if (gender == null) {
-                throw new IllegalArgumentException("Product requires stock status");
+            Integer quantity = values.getAsInteger(InventoryEntry.COLUMN_QUANTITY);
+            if (quantity == null) {
+                throw new IllegalArgumentException("Product requires current stock status");
             }
         }
 
         if (values.containsKey(InventoryEntry.COLUMN_PRICE)) {
-            String name = values.getAsString(InventoryEntry.COLUMN_PRICE);
-            if (name == null) {
+            String price = values.getAsString(InventoryEntry.COLUMN_PRICE);
+            if (price == null) {
                 throw new IllegalArgumentException("Product requires a price");
             }
         }
@@ -261,7 +276,7 @@ public class InventoryProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = database.update(InventoryEntry.TABLE_NAME, values, selection, selectionArgs);
+        int rowsUpdated = database.update(TABLE_NAME, values, selection, selectionArgs);
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
         if (rowsUpdated != 0) {
