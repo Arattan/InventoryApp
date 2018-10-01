@@ -59,10 +59,8 @@ public class InventoryProvider extends ContentProvider {
     /** Database helper object */
     private InventoryDbHelper mDbHelper;
 
-
     @Override
     public boolean onCreate() {
-
         mDbHelper = new InventoryDbHelper(getContext());
         return true;
     }
@@ -71,7 +69,6 @@ public class InventoryProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder)  {
-
         // Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -110,7 +107,6 @@ public class InventoryProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
-
         //Set notification URI on the Cursor,
         // so we know what content URI the Cursor was created for.
         // If the data at this URI changes, then we know we need to update the Cursor.
@@ -118,7 +114,6 @@ public class InventoryProvider extends ContentProvider {
         return cursor;
 
     }
-
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {

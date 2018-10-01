@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements
                     Toast.LENGTH_SHORT).show();
         }
     }
-
     /**
      * Helper method to delete all products in the database.
      */

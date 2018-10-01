@@ -17,7 +17,6 @@ import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
 
 public class InventoryCursorAdapter extends CursorAdapter {
 
-
     public InventoryCursorAdapter(Context context, Cursor c) {
         super(context, c, 0 /* flags */);
     }

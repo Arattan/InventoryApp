@@ -45,15 +45,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      * Identifier for the inventory data loader
      */
     private static final int EXISTING_INVENTORY_LOADER = 0;
+    private static final int PICK_REQUEST = 0;
     /**
      * EditText field to enter the product's name
      */
     private EditText mNameEditText;
     /**
-     *  ImageView field for product image
+     * ImageView field for product image
      */
     private ImageView mProductImage;
-
     /**
      * EditText field to enter the product's quantity
      */
@@ -66,16 +66,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private Button mDeleteProduct;
     private Button mDecrementButton;
     private Button mIncrementButton;
-    private static final int PICK_REQUEST = 0;
     private Button mImageButton;
     private Uri mUri;
-
     /**
      * Content URI for the existing product (null if it's a new product)
      */
     private Uri mCurrentInventoryUri;
 
-    /** Boolean flag that keeps track of whether the product has been edited (true) or not (false) */
+    /**
+     * Boolean flag that keeps track of whether the product has been edited (true) or not (false)
+     */
     private boolean mProductHasChanged = false;
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
@@ -88,7 +88,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             return false;
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +126,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         mImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick (View view){
+            public void onClick(View view) {
                 openImagePicker();
             }
         });
@@ -178,14 +177,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     public void openImagePicker() {
         Intent intent;
 
-        if (Build.VERSION.SDK_INT < 19){
+        if (Build.VERSION.SDK_INT < 19) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
         } else {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
         }
         intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent,"Select Image"), PICK_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_REQUEST);
     }
 
     // Receive intent code to open gallery and pick image
@@ -261,28 +260,28 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
-    public void decreaseQuantity(View view){
+    public void decreaseQuantity(View view) {
         String quantityEt = mQuantityEditText.getText().toString();
         int quantityValue = Integer.parseInt(quantityEt);
         int quantityDecrement = quantityValue - 1;
-        if (quantityDecrement < 0){
+        if (quantityDecrement < 0) {
             return;
         }
         displayDecrease(quantityDecrement);
     }
 
-    private void displayDecrease (int number) {
+    private void displayDecrease(int number) {
         mQuantityEditText.setText("" + number);
     }
 
-    public void increaseQuantity(View view){
+    public void increaseQuantity(View view) {
         String quantityEt = mQuantityEditText.getText().toString();
         int quantityValue = Integer.parseInt(quantityEt);
         int quantityIncrement = quantityValue + 1;
         displayIncrease(quantityIncrement);
     }
 
-    private void displayIncrease (int number) {
+    private void displayIncrease(int number) {
         mQuantityEditText.setText("" + number);
     }
 
@@ -327,28 +326,27 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 //If product data hasn't changed continue with navigating to parent {@link Main Activity}.
-                if (!mProductHasChanged){
+                if (!mProductHasChanged) {
                     NavUtils.navigateUpFromSameTask(this);
                     return true;
                 }
-            //If there are unsaved changes, prompt a dialog to warn the user
+                //If there are unsaved changes, prompt a dialog to warn the user
                 // Create a click listener to handle the user confirming that changes should be discarded
 
                 DialogInterface.OnClickListener discardButtonClickListener =
-                        new DialogInterface.OnClickListener(){
-                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i){
-                            //User clicked "Discard" button, navigate to parent activity
-                            NavUtils.navigateUpFromSameTask(EditorActivity.this);
-                        }
-                    };
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //User clicked "Discard" button, navigate to parent activity
+                                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                            }
+                        };
                 // Show a dialog that notifies the user they have unsaved changes
                 showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
     /**
      * This method is called when the back button is pressed.
      */
@@ -383,13 +381,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String quantityString = mQuantityEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
 
-        if (mUri == null){
+        if (mUri == null) {
             Toast.makeText(this, getString(R.string.missing_image),
                     Toast.LENGTH_SHORT).show();
-                return;
+            return;
         }
         String imageString = mUri.toString();
-
 
         // Check if this is supposed to be a new Product
         // and check if all the fields in the editor are blank
@@ -408,13 +405,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(InventoryEntry.COLUMN_IMAGE, imageString);
 
         int quantity = 0;
-        if (!TextUtils.isEmpty(quantityString)){
+        if (!TextUtils.isEmpty(quantityString)) {
             quantity = Integer.parseInt(quantityString);
         }
         values.put(InventoryEntry.COLUMN_QUANTITY, quantity);
 
         int price = 0;
-        if (!TextUtils.isEmpty(priceString)){
+        if (!TextUtils.isEmpty(priceString)) {
             price = Integer.parseInt(priceString);
         }
         values.put(InventoryEntry.COLUMN_PRICE, price);
@@ -455,7 +452,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
         // Since the editor shows all pet attributes, define a projection that contains
@@ -476,7 +472,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor){
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Bail early if the cursor is null or there is less than 1 row in the cursor
         if (cursor == null || cursor.getCount() < 1) {
             return;
@@ -521,6 +517,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mQuantityEditText.setText("");
         mPriceEditText.setText("");
     }
+
     /**
      * Show a dialog that warns the user there are unsaved changes that will be lost
      * if they continue leaving the editor.

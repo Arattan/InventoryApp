@@ -8,9 +8,7 @@ import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
 public class InventoryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "inventory.db";
-
     private static final int DATABASE_VERSION = 1;
-
 
     public InventoryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
