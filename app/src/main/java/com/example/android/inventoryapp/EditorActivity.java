@@ -36,8 +36,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static android.net.Uri.parse;
-
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = EditorActivity.class.getName();
@@ -135,8 +133,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String productName = mNameEditText.getText().toString().trim();
+
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                emailIntent.setData(parse("mailto:"));
+                emailIntent.setType("text/plain");
+                emailIntent.setData(Uri.parse("mailto:"));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "New Order: " + productName);
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Product:  "
+                        + productName + "\n"
+                        + "Order Quantity:  ");
 
                 if (emailIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(emailIntent);
@@ -186,7 +191,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         intent.setType("image/*");
         startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_REQUEST);
     }
-
     // Receive intent code to open gallery and pick image
     // Location of Image is provided in a Uri, which is then set to the the Product ImageView.
     // MyShareImageExample app by Carlos Jimenez (Udacity mentor) used as reference code.
@@ -262,12 +266,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     public void decreaseQuantity(View view) {
         String quantityEt = mQuantityEditText.getText().toString();
-        int quantityValue = Integer.parseInt(quantityEt);
-        int quantityDecrement = quantityValue - 1;
-        if (quantityDecrement < 0) {
-            return;
+        if (TextUtils.isEmpty(quantityEt)) {
+            Toast.makeText(this, R.string.quantity_required, Toast.LENGTH_SHORT).show();
+        } else {
+            int quantityValue = Integer.parseInt(quantityEt);
+            int quantityDecrement = quantityValue - 1;
+
+            if (quantityDecrement < 0) {
+                return;
+            }
+            displayDecrease(quantityDecrement);
         }
-        displayDecrease(quantityDecrement);
     }
 
     private void displayDecrease(int number) {
@@ -276,9 +285,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     public void increaseQuantity(View view) {
         String quantityEt = mQuantityEditText.getText().toString();
-        int quantityValue = Integer.parseInt(quantityEt);
-        int quantityIncrement = quantityValue + 1;
-        displayIncrease(quantityIncrement);
+        if (TextUtils.isEmpty(quantityEt)) {
+            Toast.makeText(this, R.string.quantity_required, Toast.LENGTH_SHORT).show();
+        } else {
+            int quantityValue = Integer.parseInt(quantityEt);
+            int quantityIncrement = quantityValue + 1;
+            displayIncrease(quantityIncrement);
+        }
     }
 
     private void displayIncrease(int number) {
@@ -316,8 +329,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             case R.id.action_save:
                 // Save product to database
                 saveProduct();
-                //Exit activity
-                finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -347,6 +358,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
         return super.onOptionsItemSelected(item);
     }
+
     /**
      * This method is called when the back button is pressed.
      */
@@ -372,14 +384,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     /**
-     * Get user input from editor and save pet into database.
+     * Get user input from editor and save product into database.
      */
     private void saveProduct() {
         // Read from input fields
-        // Use trim to eliminate leading or trailing white space
+
         String nameString = mNameEditText.getText().toString().trim();
-        String quantityString = mQuantityEditText.getText().toString().trim();
-        String priceString = mPriceEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(nameString)) {
+            Toast.makeText(this, getString(R.string.missing_product_name),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (mUri == null) {
             Toast.makeText(this, getString(R.string.missing_image),
@@ -388,6 +403,36 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
         String imageString = mUri.toString();
 
+        int quantity;
+        String quantityString = mQuantityEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(quantityString)) {
+            Toast.makeText(this, getString(R.string.missing_quantity),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            quantity = Integer.parseInt(quantityString);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, getString(R.string.invalid_number),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int price;
+        String priceString = mPriceEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(priceString)) {
+            Toast.makeText(this, getString(R.string.missing_price),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            price = Integer.parseInt(priceString);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, getString(R.string.invalid_number),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Check if this is supposed to be a new Product
         // and check if all the fields in the editor are blank
         if (mCurrentInventoryUri == null &&
@@ -395,25 +440,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString)) {
             // Since no fields were modified, we can return early without creating a new inventory.
             // No need to create ContentValues and no need to do any ContentProvider operations.
+            Toast.makeText(this, "No product added", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Create a ContentValues object where column names are the keys,
         // and product attributes from the editor are the values.
         ContentValues values = new ContentValues();
+
         values.put(InventoryEntry.COLUMN_PRODUCT_NAME, nameString);
         values.put(InventoryEntry.COLUMN_IMAGE, imageString);
-
-        int quantity = 0;
-        if (!TextUtils.isEmpty(quantityString)) {
-            quantity = Integer.parseInt(quantityString);
-        }
         values.put(InventoryEntry.COLUMN_QUANTITY, quantity);
-
-        int price = 0;
-        if (!TextUtils.isEmpty(priceString)) {
-            price = Integer.parseInt(priceString);
-        }
         values.put(InventoryEntry.COLUMN_PRICE, price);
 
         // Determine if this is a new or existing product by checking if mCurrentInventoryUri is null or not
@@ -432,10 +469,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.editor_insert_product_successful),
                         Toast.LENGTH_SHORT).show();
             }
+            finish();
         } else {
-            // Otherwise this is an EXISTING product, so update the pet with content URI: mCurrentPetUri
+            // Otherwise this is an EXISTING product, so update the product with content URI: mCurrentInventoryUri
             // and pass in the new ContentValues. Pass in null for the selection and selection args
-            // because mCurrentPetUri will already identify the correct row in the database that
+            // because mCurrentInventoryUri will already identify the correct row in the database that
             // we want to modify.
             int rowsAffected = getContentResolver().update(mCurrentInventoryUri, values, null, null);
 
@@ -449,13 +487,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.editor_update_product_successful),
                         Toast.LENGTH_SHORT).show();
             }
+            finish();
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        // Since the editor shows all pet attributes, define a projection that contains
-        // all columns from the pet table
+        // Since the editor shows all product attributes, define a projection that contains
+        // all columns from the product table
         String[] projection = {
                 InventoryEntry._ID,
                 InventoryEntry.COLUMN_PRODUCT_NAME,
@@ -464,7 +503,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 InventoryEntry.COLUMN_PRICE};
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                mCurrentInventoryUri,         // Query the content URI for the current pet
+                mCurrentInventoryUri,         // Query the content URI for the current product
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
@@ -535,7 +574,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the product.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -553,8 +592,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
+                // User clicked the "Delete" button, so delete the product.
                 deleteProduct();
+                finish();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -593,5 +633,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
             }
         }
+
     }
 }

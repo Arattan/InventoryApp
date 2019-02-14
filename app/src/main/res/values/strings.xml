@@ -58,18 +58,18 @@
     <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
     <string name="category_product">Product</string>
 
-    <!-- Label for gender information in the editor [CHAR LIMIT=30] -->
+    <!-- Label for quantity information in the editor [CHAR LIMIT=30] -->
     <string name="category_quantity">Quantity</string>
 
-    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
+    <!-- Label for price information in the editor [CHAR LIMIT=30] -->
     <string name="category_price">Price (€)</string>
-    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
+    <!-- Label for image information in the editor [CHAR LIMIT=30] -->
     <string name="category_image">Image</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_product_name">Name</string>
 
-    <!-- Text hint for breed field in the editor [CHAR LIMIT=30] -->
+    <!-- Text hint for quantity field in the editor [CHAR LIMIT=30] -->
     <string name="hint_quantity">0</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
@@ -81,7 +81,7 @@
     <!-- Label for dropdown menu option if the stock level is unknown [CHAR LIMIT=20] -->
     <string name="unknown_quantity">Unknown quantity</string>
 
-    <!-- Label for the product's breed if the breed is unknown [CHAR LIMIT=20] -->
+    <!-- Label for the product's price if the price is unknown [CHAR LIMIT=20] -->
     <string name="unknown_price">Unknown price</string>
 
     <!-- Image content description -->
@@ -96,7 +96,10 @@
     <string name="contact_supplier">Order More</string>
     <string name="delete_product">Delete From Inventory</string>
     <string name="image_button">ADD IMAGE</string>
-    <string name="missing_image">Image is required</string>
-
-
+    <string name="missing_image">Product Image is required</string>
+    <string name="missing_product_name">Missing Product Name</string>
+    <string name="missing_quantity">Quantity value is missing</string>
+    <string name="missing_price">Price information is missing</string>
+    <string name="quantity_required">Initial quantity value required</string>
+    <string name="invalid_number">Invalid Value</string>
 </resources>
